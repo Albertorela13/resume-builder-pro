@@ -15,53 +15,46 @@ export default function ExperiencePage() {
 
   const updateEntry = useCallback(
     (index: number, field: keyof ExpEntry, value: string | boolean) => {
-      setExpData((prev: ExpEntry[]) => {
-        const next = [...prev];
-        next[index] = { ...next[index], [field]: value };
-        if (field === "current" && value === true) {
-          next[index].endDate = "";
-        }
-        return next;
-      });
+      const next = [...expData];
+      next[index] = { ...next[index], [field]: value };
+      if (field === "current" && value === true) {
+        next[index].endDate = "";
+      }
+      setExpData(next);
     },
-    [setExpData]
+    [expData, setExpData]
   );
 
   const addEntry = useCallback(() => {
-    setExpData((prev: ExpEntry[]) => [
-      ...prev,
+    setExpData([
+      ...expData,
       { title: "", company: "", functions: "", location: "", startDate: "", endDate: "", current: false },
     ]);
-  }, [setExpData]);
+  }, [expData, setExpData]);
 
-  // Coach operates on the first entry's functions field
   const activeIndex = 0;
   const activeEntry = expData[activeIndex];
 
   const handleInsert = useCallback(
     (content: string) => {
-      setExpData((prev: ExpEntry[]) => {
-        const next = [...prev];
-        const current = next[activeIndex].functions;
-        next[activeIndex] = {
-          ...next[activeIndex],
-          functions: current.trim() ? current + "\n" + content : content,
-        };
-        return next;
-      });
+      const next = [...expData];
+      const current = next[activeIndex].functions;
+      next[activeIndex] = {
+        ...next[activeIndex],
+        functions: current.trim() ? current + "\n" + content : content,
+      };
+      setExpData(next);
     },
-    [setExpData]
+    [expData, setExpData]
   );
 
   const handleReplace = useCallback(
     (content: string) => {
-      setExpData((prev: ExpEntry[]) => {
-        const next = [...prev];
-        next[activeIndex] = { ...next[activeIndex], functions: content };
-        return next;
-      });
+      const next = [...expData];
+      next[activeIndex] = { ...next[activeIndex], functions: content };
+      setExpData(next);
     },
-    [setExpData]
+    [expData, setExpData]
   );
 
   const getSuggestions = useCallback((key: GenKey) => experienceSuggestions[key], []);
@@ -77,10 +70,8 @@ export default function ExperiencePage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() =>
-                    setExpData((prev: ExpEntry[]) => prev.filter((_, idx) => idx !== i))
-                  }
-                  className="text-destructive text-xs"
+                  onClick={() => setExpData(expData.filter((_, idx) => idx !== i))}
+                  className="text-xs text-destructive"
                 >
                   Remove
                 </Button>
@@ -91,7 +82,7 @@ export default function ExperiencePage() {
             <div>
               <label className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                 Title / Position
-                {entry.title.trim() && <CheckCircle2 className="h-4 w-4 text-blue-500" />}
+                {entry.title.trim() && <CheckCircle2 className="h-4 w-4 text-ai-purple" />}
               </label>
               <Input
                 value={entry.title}
@@ -119,7 +110,6 @@ export default function ExperiencePage() {
                 <RichTextEditor
                   value={entry.functions}
                   onChange={(html) => updateEntry(i, "functions", html)}
-                  onGenerateClick={i === activeIndex ? undefined : undefined}
                   placeholder="Describe your key responsibilities and achievements…"
                   minHeight={100}
                 />

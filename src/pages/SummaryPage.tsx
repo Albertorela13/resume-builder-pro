@@ -11,9 +11,9 @@ export default function SummaryPage() {
 
   const handleInsert = useCallback(
     (content: string) => {
-      setSummaryText((prev: string) => (prev.trim() ? prev + "\n\n" + content : content));
+      setSummaryText(summaryText.trim() ? summaryText + "\n\n" + content : content);
     },
-    [setSummaryText]
+    [setSummaryText, summaryText]
   );
 
   const handleReplace = useCallback(
