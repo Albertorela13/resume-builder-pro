@@ -105,19 +105,6 @@ export default function ExperiencePage() {
               />
             </div>
 
-            {/* Functions */}
-            <div>
-              <label className="text-sm font-medium text-foreground">Functions and achievements</label>
-              <div className="mt-1">
-                <RichTextEditor
-                  value={entry.functions}
-                  onChange={(html) => updateEntry(i, "functions", html)}
-                  placeholder="Describe your key responsibilities and achievements…"
-                  minHeight={100}
-                />
-              </div>
-            </div>
-
             {/* Location */}
             <div>
               <label className="text-sm font-medium text-foreground">Location</label>
@@ -166,6 +153,19 @@ export default function ExperiencePage() {
               <label htmlFor={`current-${i}`} className="text-sm text-foreground cursor-pointer">
                 I'm in this job right now
               </label>
+            </div>
+
+            {/* Functions and achievements */}
+            <div>
+              <label className="text-sm font-medium text-foreground">Functions and achievements</label>
+              <div className="mt-1">
+                <RichTextEditor
+                  value={entry.functions}
+                  onChange={(html) => updateEntry(i, "functions", html)}
+                  placeholder="Describe your key responsibilities and achievements…"
+                  minHeight={100}
+                />
+              </div>
             </div>
           </div>
         ))}
