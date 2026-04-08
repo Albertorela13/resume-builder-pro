@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { useCV } from "@/contexts/CVContext";
 import { EditorLayout } from "@/components/EditorLayout";
 import { ContentCoach } from "@/components/ContentCoach";
+import { NudgeModal } from "@/components/NudgeModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { skillsSuggestions } from "@/data/suggestions";
@@ -14,6 +15,7 @@ export default function SkillsPage() {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [nudgeOpen, setNudgeOpen] = useState(false);
   const editRef = useRef<HTMLInputElement>(null);
 
   const addSkill = useCallback(
@@ -58,7 +60,6 @@ export default function SkillsPage() {
     setEditIndex(null);
   };
 
-  // Drag and drop
   const handleDragStart = (index: number) => setDragIndex(index);
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
@@ -80,10 +81,8 @@ export default function SkillsPage() {
     [addSkill]
   );
 
-  const getSuggestions = useCallback((key: GenKey) => {
-    // Return as SuggestionItem[] for the coach to render as skill rows
-    return skillsSuggestions[key].map((s) => ({ title: s, content: s }));
-  }, []);
+  // Return plain strings for flat row rendering
+  const getSuggestions = useCallback((key: GenKey) => skillsSuggestions[key], []);
 
   return (
     <EditorLayout>
@@ -141,15 +140,20 @@ export default function SkillsPage() {
             </div>
           ))}
         </div>
+
+        <ContentCoach
+          pageKey="skills"
+          fieldValue={skillTags.join(", ")}
+          onInsert={handleInsert}
+          getSuggestions={getSuggestions}
+          hideImprove
+          onNudge={() => setNudgeOpen(true)}
+        />
       </div>
 
-      <ContentCoach
-        pageKey="skills"
-        fieldValue={skillTags.join(", ")}
-        onInsert={handleInsert}
-        getSuggestions={getSuggestions}
-        hideImprove
-      />
+      <div />
+
+      <NudgeModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
     </EditorLayout>
   );
 }

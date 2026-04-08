@@ -3,7 +3,6 @@ import { useCV } from "@/contexts/CVContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sparkles, RefreshCw, Check, Loader2 } from "lucide-react";
-import { NudgeArea } from "./NudgeArea";
 import { cn } from "@/lib/utils";
 import type { SuggestionItem } from "@/data/suggestions";
 
@@ -14,6 +13,7 @@ interface ContentCoachProps {
   onReplace?: (content: string) => void;
   getSuggestions: (key: "full" | "role" | "none") => SuggestionItem[] | string[];
   hideImprove?: boolean;
+  onNudge?: () => void;
 }
 
 export function ContentCoach({
@@ -23,6 +23,7 @@ export function ContentCoach({
   onReplace,
   getSuggestions,
   hideImprove = false,
+  onNudge,
 }: ContentCoachProps) {
   const {
     coachRole,
@@ -36,9 +37,8 @@ export function ContentCoach({
   const [suggestions, setSuggestions] = useState<(SuggestionItem | string)[]>([]);
   const [loading, setLoading] = useState(false);
   const [improvedText, setImprovedText] = useState("");
-  const [showNudge, setShowNudge] = useState(false);
+  const [showContext, setShowContext] = useState(false);
 
-  // Status indicator
   const isOfficial =
     officialLocked && coachRole.trim().toLowerCase() === officialJD.role.trim().toLowerCase();
   const hasContext = coachRole.trim() !== "";
@@ -59,23 +59,31 @@ export function ContentCoach({
   useEffect(() => {
     const isFirst = markPageVisited(pageKey);
     if (isFirst && (coachRole.trim() || officialJD.role.trim())) {
-      const timer = setTimeout(doGenerate, 500);
+      const timer = setTimeout(() => {
+        setShowContext(true);
+        doGenerate();
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [pageKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleGenerate = () => {
+    setShowContext(true);
+    doGenerate();
+  };
+
   const handleInsert = (content: string) => {
     onInsert(content);
-    if (!officialLocked) {
-      setShowNudge(true);
+    if (!officialLocked && onNudge) {
+      onNudge();
     }
   };
 
   const handleImprove = () => {
     if (!fieldValue.trim()) return;
+    setShowContext(true);
     setLoading(true);
     setTimeout(() => {
-      // Simple improve: add a polished prefix
       const cleaned = fieldValue.replace(/<[^>]+>/g, "").trim();
       setImprovedText(
         `Refined and enhanced: ${cleaned} — with a focus on measurable outcomes and strategic impact.`
@@ -85,42 +93,11 @@ export function ContentCoach({
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* Context Block */}
-      <div className="rounded-lg border border-coach-border bg-coach-bg p-4">
-        <div className="flex items-center gap-2 text-xs">
-          {isOfficial ? (
-            <span className="flex items-center gap-1 text-success">
-              <Check className="h-3 w-3" /> Using official job details
-            </span>
-          ) : hasContext ? (
-            <span className="flex items-center gap-1 text-ai-purple">
-              <Sparkles className="h-3 w-3" /> Using custom context
-              {officialLocked && (
-                <button
-                  onClick={() => setCoachRole(officialJD.role)}
-                  className="ml-1 underline text-ai-purple hover:text-ai-purple/80"
-                >
-                  Restore official
-                </button>
-              )}
-            </span>
-          ) : (
-            <span className="text-muted-foreground">No context — results will be generic</span>
-          )}
-        </div>
-        <Input
-          value={coachRole}
-          onChange={(e) => setCoachRole(e.target.value)}
-          placeholder="Target role (e.g. Product Manager)"
-          className="mt-2 text-sm"
-        />
-      </div>
-
-      {/* Action Buttons */}
+    <div className="mt-3 space-y-3">
+      {/* Action Buttons — close to the field */}
       <div className="flex gap-2">
         <Button
-          onClick={doGenerate}
+          onClick={handleGenerate}
           disabled={loading}
           className="bg-ai-purple text-ai-purple-foreground hover:bg-ai-purple/90 gap-1.5"
         >
@@ -135,6 +112,39 @@ export function ContentCoach({
         )}
       </div>
 
+      {/* Context Block — hidden until Generate is clicked */}
+      {showContext && (
+        <div className="rounded-lg border border-coach-border bg-coach-bg p-3">
+          <div className="flex items-center gap-2 text-xs">
+            {isOfficial ? (
+              <span className="flex items-center gap-1 text-success">
+                <Check className="h-3 w-3" /> Using official job details
+              </span>
+            ) : hasContext ? (
+              <span className="flex items-center gap-1 text-ai-purple">
+                <Sparkles className="h-3 w-3" /> Using custom context
+                {officialLocked && (
+                  <button
+                    onClick={() => setCoachRole(officialJD.role)}
+                    className="ml-1 underline text-ai-purple hover:text-ai-purple/80"
+                  >
+                    Restore official
+                  </button>
+                )}
+              </span>
+            ) : (
+              <span className="text-muted-foreground">No context — results will be generic</span>
+            )}
+          </div>
+          <Input
+            value={coachRole}
+            onChange={(e) => setCoachRole(e.target.value)}
+            placeholder="Target role (e.g. Product Manager)"
+            className="mt-2 text-sm"
+          />
+        </div>
+      )}
+
       {/* Loading */}
       {loading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -143,15 +153,36 @@ export function ContentCoach({
         </div>
       )}
 
-      {/* Suggestions (opts-area) */}
+      {/* Suggestions */}
       {suggestions.length > 0 && !loading && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Suggestions</p>
           {suggestions.map((item, i) => {
             const isString = typeof item === "string";
-            const title = isString ? (item as string) : (item as SuggestionItem).title;
+            const title = isString ? undefined : (item as SuggestionItem).title;
             const content = isString ? (item as string) : (item as SuggestionItem).content;
 
+            // Skill-style flat row for string items
+            if (isString) {
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between rounded-md border bg-background px-3 py-2"
+                >
+                  <span className="text-sm text-foreground">{content}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleInsert(content)}
+                    className="text-xs text-ai-purple hover:text-ai-purple/80 shrink-0"
+                  >
+                    Use this
+                  </Button>
+                </div>
+              );
+            }
+
+            // Card-style for SuggestionItem
             return (
               <div
                 key={i}
@@ -159,11 +190,11 @@ export function ContentCoach({
                   "rounded-lg border bg-background p-3 transition-colors hover:border-ai-purple/40"
                 )}
               >
-                {!isString && (
+                {title && (
                   <p className="mb-1 text-xs font-semibold text-foreground">{title}</p>
                 )}
                 <p className="text-sm text-muted-foreground whitespace-pre-line">
-                  {isString ? content : (content.length > 200 ? content.slice(0, 200) + "…" : content)}
+                  {content.length > 200 ? content.slice(0, 200) + "…" : content}
                 </p>
                 <Button
                   size="sm"
@@ -179,7 +210,7 @@ export function ContentCoach({
         </div>
       )}
 
-      {/* Improved text (imp-area) */}
+      {/* Improved text */}
       {improvedText && !loading && (
         <div className="rounded-lg border border-success/30 bg-success/5 p-3">
           <p className="text-xs font-medium text-success mb-1">Improved version</p>
@@ -196,9 +227,6 @@ export function ContentCoach({
           </Button>
         </div>
       )}
-
-      {/* Nudge Area */}
-      <NudgeArea visible={showNudge} onDismiss={() => setShowNudge(false)} />
     </div>
   );
 }
