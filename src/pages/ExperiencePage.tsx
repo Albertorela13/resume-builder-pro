@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useCV, type ExpEntry } from "@/contexts/CVContext";
 import { EditorLayout } from "@/components/EditorLayout";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { ContentCoach } from "@/components/ContentCoach";
+import { NudgeModal } from "@/components/NudgeModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import type { GenKey } from "@/data/suggestions";
 
 export default function ExperiencePage() {
   const { expData, setExpData } = useCV();
+  const [nudgeOpen, setNudgeOpen] = useState(false);
 
   const updateEntry = useCallback(
     (index: number, field: keyof ExpEntry, value: string | boolean) => {
@@ -172,15 +174,20 @@ export default function ExperiencePage() {
           <Plus className="h-4 w-4" />
           Add another
         </Button>
+
+        <ContentCoach
+          pageKey="experience"
+          fieldValue={activeEntry?.functions || ""}
+          onInsert={handleInsert}
+          onReplace={handleReplace}
+          getSuggestions={getSuggestions}
+          onNudge={() => setNudgeOpen(true)}
+        />
       </div>
 
-      <ContentCoach
-        pageKey="experience"
-        fieldValue={activeEntry?.functions || ""}
-        onInsert={handleInsert}
-        onReplace={handleReplace}
-        getSuggestions={getSuggestions}
-      />
+      <div />
+
+      <NudgeModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
     </EditorLayout>
   );
 }

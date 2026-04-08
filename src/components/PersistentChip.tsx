@@ -1,23 +1,37 @@
 import { useCV } from "@/contexts/CVContext";
-import { Lock } from "lucide-react";
+import { Lock, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export function PersistentChip() {
   const { officialLocked, officialJD } = useCV();
 
+  const hasRole = officialLocked && officialJD.role.trim() !== "";
+  const hasJD = officialLocked && officialJD.jd.trim() !== "";
+
   if (!officialLocked) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-chip-neutral px-3 py-1 text-xs font-medium text-chip-neutral-foreground">
-        No application context
-      </span>
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5">
+        <span className="text-xs font-semibold text-muted-foreground">Application 1</span>
+        <span className="text-[11px] text-muted-foreground">· Tailor your CV to one job</span>
+      </div>
     );
   }
 
-  const hasJD = officialJD.jd.trim() !== "";
-
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 text-xs font-medium text-success">
-      <Lock className="h-3 w-3" />
-      {officialJD.role} · {hasJD ? "With JD" : "No JD"}
-    </span>
+    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5">
+      <Lock className="h-3 w-3 text-muted-foreground" />
+      <span className="text-xs font-semibold text-foreground">Application 1</span>
+      <span className="text-[11px] text-muted-foreground">· {officialJD.role}</span>
+      {hasJD ? (
+        <span className="flex items-center gap-1 text-[11px] text-success">
+          <CheckCircle2 className="h-3 w-3" />
+          Job description included
+        </span>
+      ) : (
+        <span className="flex items-center gap-1 text-[11px] text-destructive">
+          <AlertCircle className="h-3 w-3" />
+          Add job description
+        </span>
+      )}
+    </div>
   );
 }
