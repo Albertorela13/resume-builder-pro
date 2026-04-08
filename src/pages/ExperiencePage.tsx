@@ -167,6 +167,17 @@ export default function ExperiencePage() {
                 />
               </div>
             </div>
+
+            {i === activeIndex && (
+              <ContentCoach
+                pageKey="experience"
+                fieldValue={activeEntry?.functions || ""}
+                onInsert={handleInsert}
+                onReplace={handleReplace}
+                getSuggestions={getSuggestions}
+                onNudge={() => setNudgeOpen(true)}
+              />
+            )}
           </div>
         ))}
 
@@ -174,15 +185,6 @@ export default function ExperiencePage() {
           <Plus className="h-4 w-4" />
           Add another
         </Button>
-
-        <ContentCoach
-          pageKey="experience"
-          fieldValue={activeEntry?.functions || ""}
-          onInsert={handleInsert}
-          onReplace={handleReplace}
-          getSuggestions={getSuggestions}
-          onNudge={() => setNudgeOpen(true)}
-        />
       </div>
 
       <div />
