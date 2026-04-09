@@ -21,7 +21,7 @@ export default function JobDetailsPage() {
     <EditorLayout>
       <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
         <Briefcase className="h-10 w-10 text-muted-foreground" />
-        {officialLocked ? (
+        {roleLocked ? (
           <>
             <p className="text-sm text-muted-foreground">
               Job details are saved. You can view them by clicking below.
