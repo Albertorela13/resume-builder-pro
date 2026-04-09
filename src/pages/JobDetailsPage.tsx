@@ -7,7 +7,7 @@ import { Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function JobDetailsPage() {
-  const { officialLocked } = useCV();
+  const { officialLocked, roleLocked } = useCV();
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
