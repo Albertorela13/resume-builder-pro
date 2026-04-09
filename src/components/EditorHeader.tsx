@@ -3,15 +3,15 @@ import { NavLink } from "@/components/NavLink";
 import { PersistentChip } from "./PersistentChip";
 
 const NAV_ITEMS = [
-  { to: "/summary", label: "Summary" },
   { to: "/experience", label: "Experience" },
   { to: "/skills", label: "Skills" },
+  { to: "/summary", label: "Summary" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
-  "/summary": "Summary",
   "/experience": "Experience",
   "/skills": "Skills",
+  "/summary": "Summary",
 };
 
 export function EditorHeader() {

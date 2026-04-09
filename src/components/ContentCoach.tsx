@@ -14,6 +14,7 @@ interface ContentCoachProps {
   getSuggestions: (key: "full" | "role" | "none") => SuggestionItem[] | string[];
   hideImprove?: boolean;
   onNudge?: () => void;
+  overrideRole?: string;
 }
 
 export function ContentCoach({
@@ -24,6 +25,7 @@ export function ContentCoach({
   getSuggestions,
   hideImprove = false,
   onNudge,
+  overrideRole,
 }: ContentCoachProps) {
   const {
     coachRole,
@@ -34,14 +36,16 @@ export function ContentCoach({
     markPageVisited,
   } = useCV();
 
+  const effectiveRole = overrideRole !== undefined ? overrideRole : coachRole;
+
   const [suggestions, setSuggestions] = useState<(SuggestionItem | string)[]>([]);
   const [loading, setLoading] = useState(false);
   const [improvedText, setImprovedText] = useState("");
   const [showContext, setShowContext] = useState(false);
 
   const isOfficial =
-    officialLocked && coachRole.trim().toLowerCase() === officialJD.role.trim().toLowerCase();
-  const hasContext = coachRole.trim() !== "";
+    officialLocked && effectiveRole.trim().toLowerCase() === officialJD.role.trim().toLowerCase();
+  const hasContext = effectiveRole.trim() !== "";
 
   const doGenerate = useCallback(() => {
     setLoading(true);
@@ -55,10 +59,9 @@ export function ContentCoach({
     }, 600);
   }, [genKey, getSuggestions]);
 
-  // Auto-generate on first visit
   useEffect(() => {
     const isFirst = markPageVisited(pageKey);
-    if (isFirst && (coachRole.trim() || officialJD.role.trim())) {
+    if (isFirst && (effectiveRole.trim() || officialJD.role.trim())) {
       const timer = setTimeout(() => {
         setShowContext(true);
         doGenerate();
@@ -94,7 +97,7 @@ export function ContentCoach({
 
   return (
     <div className="mt-3 space-y-3">
-      {/* Action Buttons — close to the field */}
+      {/* Action Buttons */}
       <div className="flex gap-2">
         <Button
           onClick={handleGenerate}
@@ -112,7 +115,7 @@ export function ContentCoach({
         )}
       </div>
 
-      {/* Context Block — hidden until Generate is clicked */}
+      {/* Context Block */}
       {showContext && (
         <div className="rounded-lg border border-coach-border bg-coach-bg p-3">
           <div className="flex items-center gap-2 text-xs">
@@ -137,10 +140,11 @@ export function ContentCoach({
             )}
           </div>
           <Input
-            value={coachRole}
+            value={overrideRole !== undefined ? overrideRole : coachRole}
             onChange={(e) => setCoachRole(e.target.value)}
             placeholder="Target role (e.g. Product Manager)"
             className="mt-2 text-sm"
+            readOnly={overrideRole !== undefined}
           />
         </div>
       )}
@@ -153,6 +157,24 @@ export function ContentCoach({
         </div>
       )}
 
+      {/* Improved text — rendered ABOVE suggestions */}
+      {improvedText && !loading && (
+        <div className="rounded-lg border border-success/30 bg-success/5 p-3">
+          <p className="text-xs font-medium text-success mb-1">Improved version</p>
+          <p className="text-sm text-foreground">{improvedText}</p>
+          <Button
+            size="sm"
+            onClick={() => {
+              onReplace?.(improvedText);
+              setImprovedText("");
+            }}
+            className="mt-2 bg-success text-success-foreground hover:bg-success/90 text-xs"
+          >
+            Apply to CV
+          </Button>
+        </div>
+      )}
+
       {/* Suggestions */}
       {suggestions.length > 0 && !loading && (
         <div className="space-y-2">
@@ -162,7 +184,6 @@ export function ContentCoach({
             const title = isString ? undefined : (item as SuggestionItem).title;
             const content = isString ? (item as string) : (item as SuggestionItem).content;
 
-            // Skill-style flat row for string items
             if (isString) {
               return (
                 <div
@@ -182,7 +203,6 @@ export function ContentCoach({
               );
             }
 
-            // Card-style for SuggestionItem
             return (
               <div
                 key={i}
@@ -207,24 +227,6 @@ export function ContentCoach({
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Improved text */}
-      {improvedText && !loading && (
-        <div className="rounded-lg border border-success/30 bg-success/5 p-3">
-          <p className="text-xs font-medium text-success mb-1">Improved version</p>
-          <p className="text-sm text-foreground">{improvedText}</p>
-          <Button
-            size="sm"
-            onClick={() => {
-              onReplace?.(improvedText);
-              setImprovedText("");
-            }}
-            className="mt-2 bg-success text-success-foreground hover:bg-success/90 text-xs"
-          >
-            Apply to CV
-          </Button>
         </div>
       )}
     </div>
