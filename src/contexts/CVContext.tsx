@@ -100,6 +100,7 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       officialJD,
+      roleLocked,
       officialLocked,
       coachRole,
       coachIsOfficial,
@@ -108,6 +109,7 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
       expData,
       visitedPages,
       setOfficialJD,
+      lockRole,
       lockOfficial,
       setCoachRole,
       setCoachIsOfficial,
@@ -117,7 +119,7 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
       markPageVisited,
       genKey,
     }),
-    [officialJD, officialLocked, coachRole, coachIsOfficial, summaryText, skillTags, expData, visitedPages, lockOfficial, markPageVisited, genKey]
+    [officialJD, roleLocked, officialLocked, coachRole, coachIsOfficial, summaryText, skillTags, expData, visitedPages, lockRole, lockOfficial, markPageVisited, genKey]
   );
 
   return <CVContext.Provider value={value}>{children}</CVContext.Provider>;
