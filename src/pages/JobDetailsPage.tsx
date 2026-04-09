@@ -7,21 +7,21 @@ import { Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function JobDetailsPage() {
-  const { officialLocked } = useCV();
+  const { officialLocked, roleLocked } = useCV();
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!officialLocked) {
+    if (!roleLocked) {
       setModalOpen(true);
     }
-  }, [officialLocked]);
+  }, [roleLocked]);
 
   return (
     <EditorLayout>
       <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
         <Briefcase className="h-10 w-10 text-muted-foreground" />
-        {officialLocked ? (
+        {roleLocked ? (
           <>
             <p className="text-sm text-muted-foreground">
               Job details are saved. You can view them by clicking below.

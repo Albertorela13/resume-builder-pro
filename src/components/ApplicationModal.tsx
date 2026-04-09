@@ -18,14 +18,14 @@ interface ApplicationModalProps {
 }
 
 export function ApplicationModal({ open, onClose, nudge = false }: ApplicationModalProps) {
-  const { officialJD, officialLocked, lockOfficial, coachRole } = useCV();
+  const { officialJD, roleLocked, officialLocked, lockRole, lockOfficial, coachRole } = useCV();
   const [role, setRole] = useState("");
   const [jd, setJd] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (open) {
-      if (officialLocked) {
+      if (roleLocked) {
         setRole(officialJD.role);
         setJd(officialJD.jd);
       } else {
@@ -34,15 +34,31 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
       }
       setError("");
     }
-  }, [open, officialLocked, officialJD, coachRole]);
+  }, [open, roleLocked, officialLocked, officialJD, coachRole]);
 
   const handleSave = () => {
     if (!role.trim()) {
       setError("Target role is required");
       return;
     }
-    lockOfficial(role.trim(), jd.trim());
-    onClose();
+
+    if (!roleLocked) {
+      // Step 1: save role only, lock role
+      lockRole(role.trim());
+      onClose();
+    } else if (!officialLocked) {
+      // Step 2: save JD too, fully lock
+      lockOfficial(role.trim(), jd.trim());
+      onClose();
+    }
+  };
+
+  // Determine title
+  const getTitle = () => {
+    if (officialLocked) return "Job details";
+    if (nudge && !roleLocked) return "Do you want to save your target job details?";
+    if (roleLocked) return "Add job description";
+    return "Tailor your CV to one job";
   };
 
   return (
@@ -50,14 +66,12 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <DialogTitle className="text-lg">
-              {nudge && !officialLocked
-                ? "Do you want to save your target job details?"
-                : "Tailor your CV to one job"}
-            </DialogTitle>
-            <span className="rounded-full bg-ai-purple/10 px-2.5 py-0.5 text-[11px] font-semibold text-ai-purple">
-              Recommended
-            </span>
+            <DialogTitle className="text-lg">{getTitle()}</DialogTitle>
+            {!officialLocked && (
+              <span className="rounded-full bg-ai-purple/10 px-2.5 py-0.5 text-[11px] font-semibold text-ai-purple">
+                Recommended
+              </span>
+            )}
           </div>
         </DialogHeader>
 
@@ -69,9 +83,16 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
             </div>
           )}
 
+          {roleLocked && !officialLocked && (
+            <div className="flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
+              <Lock className="h-3 w-3" />
+              Target role is locked — you can still add a job description
+            </div>
+          )}
+
           <div>
             <label className="text-sm font-medium text-foreground">
-              Target Role {!officialLocked && <span className="text-destructive">*</span>}
+              Target Role {!roleLocked && <span className="text-destructive">*</span>}
             </label>
             <Input
               value={role}
@@ -81,7 +102,7 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
               }}
               placeholder="e.g. Senior Product Manager"
               className="mt-1"
-              readOnly={officialLocked}
+              readOnly={roleLocked}
             />
             {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
           </div>
@@ -137,7 +158,7 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
                 className="bg-ai-purple text-ai-purple-foreground hover:bg-ai-purple/90 gap-1.5"
               >
                 <FileText className="h-4 w-4" />
-                Save & tailor my CV
+                {roleLocked ? "Save & lock job details" : "Save & tailor my CV"}
               </Button>
             )}
           </div>
