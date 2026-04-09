@@ -57,6 +57,7 @@ const EMPTY_EXP: ExpEntry = {
 
 export function CVProvider({ children }: { children: React.ReactNode }) {
   const [officialJD, setOfficialJD] = useState({ role: "", jd: "" });
+  const [roleLocked, setRoleLocked] = useState(false);
   const [officialLocked, setOfficialLocked] = useState(false);
   const [coachRole, setCoachRole] = useState("");
   const [coachIsOfficial, setCoachIsOfficial] = useState(false);
@@ -65,8 +66,15 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
   const [expData, setExpData] = useState<ExpEntry[]>([{ ...EMPTY_EXP }]);
   const [visitedPages] = useState<Set<string>>(new Set());
 
+  const lockRole = useCallback((role: string) => {
+    setOfficialJD(prev => ({ ...prev, role }));
+    setRoleLocked(true);
+    setCoachRole(role);
+  }, []);
+
   const lockOfficial = useCallback((role: string, jd: string) => {
     setOfficialJD({ role, jd });
+    setRoleLocked(true);
     setOfficialLocked(true);
     setCoachRole(role);
     setCoachIsOfficial(jd.trim() !== "");
