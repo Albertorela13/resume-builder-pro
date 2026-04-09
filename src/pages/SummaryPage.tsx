@@ -3,7 +3,7 @@ import { useCV } from "@/contexts/CVContext";
 import { EditorLayout } from "@/components/EditorLayout";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { ContentCoach } from "@/components/ContentCoach";
-import { NudgeModal } from "@/components/NudgeModal";
+import { ApplicationModal } from "@/components/ApplicationModal";
 import { summarySuggestions } from "@/data/suggestions";
 import type { GenKey } from "@/data/suggestions";
 
@@ -48,7 +48,7 @@ export default function SummaryPage() {
 
       <div />
 
-      <NudgeModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
+      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
     </EditorLayout>
   );
 }

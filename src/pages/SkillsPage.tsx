@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { useCV } from "@/contexts/CVContext";
 import { EditorLayout } from "@/components/EditorLayout";
 import { ContentCoach } from "@/components/ContentCoach";
-import { NudgeModal } from "@/components/NudgeModal";
+import { ApplicationModal } from "@/components/ApplicationModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { skillsSuggestions } from "@/data/suggestions";
@@ -81,13 +81,11 @@ export default function SkillsPage() {
     [addSkill]
   );
 
-  // Return plain strings for flat row rendering
   const getSuggestions = useCallback((key: GenKey) => skillsSuggestions[key], []);
 
   return (
     <EditorLayout>
       <div className="space-y-4">
-        {/* Add input */}
         <div className="flex gap-2">
           <Input
             value={inputValue}
@@ -102,7 +100,6 @@ export default function SkillsPage() {
           </Button>
         </div>
 
-        {/* Skill chips */}
         <div className="flex flex-wrap gap-2">
           {skillTags.map((skill, i) => (
             <div
@@ -153,7 +150,7 @@ export default function SkillsPage() {
 
       <div />
 
-      <NudgeModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
+      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
     </EditorLayout>
   );
 }
