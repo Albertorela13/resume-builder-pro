@@ -19,7 +19,8 @@ const App = () => (
       <CVProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/experience" replace />} />
+            <Route path="/" element={<Navigate to="/job-details" replace />} />
+            <Route path="/job-details" element={<JobDetailsPage />} />
             <Route path="/summary" element={<SummaryPage />} />
             <Route path="/experience" element={<ExperiencePage />} />
             <Route path="/skills" element={<SkillsPage />} />
