@@ -74,12 +74,9 @@ export default function SkillsPage() {
 
   const handleDragEnd = () => setDragIndex(null);
 
-  const handleInsert = useCallback(
-    (content: string) => {
-      addSkill(content);
-    },
-    [addSkill]
-  );
+  const handleInsert = (content: string) => {
+    addSkill(content);
+  };
 
   const getSuggestions = useCallback((key: GenKey) => skillsSuggestions[key], []);
 
@@ -150,7 +147,7 @@ export default function SkillsPage() {
 
       <div />
 
-      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
+      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} nudge />
     </EditorLayout>
   );
 }

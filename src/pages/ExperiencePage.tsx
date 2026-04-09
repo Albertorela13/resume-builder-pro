@@ -199,7 +199,7 @@ export default function ExperiencePage() {
 
       <div />
 
-      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} />
+      <ApplicationModal open={nudgeOpen} onClose={() => setNudgeOpen(false)} nudge />
     </EditorLayout>
   );
 }

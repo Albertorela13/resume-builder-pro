@@ -3,12 +3,14 @@ import { NavLink } from "@/components/NavLink";
 import { PersistentChip } from "./PersistentChip";
 
 const NAV_ITEMS = [
+  { to: "/job-details", label: "Job Details" },
   { to: "/experience", label: "Experience" },
   { to: "/skills", label: "Skills" },
   { to: "/summary", label: "Summary" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
+  "/job-details": "Job Details",
   "/experience": "Experience",
   "/skills": "Skills",
   "/summary": "Summary",

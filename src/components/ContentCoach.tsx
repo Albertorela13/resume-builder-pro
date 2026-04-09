@@ -125,7 +125,7 @@ export function ContentCoach({
               </span>
             ) : hasContext ? (
               <span className="flex items-center gap-1 text-ai-purple">
-                <Sparkles className="h-3 w-3" /> Using custom context
+                <Sparkles className="h-3 w-3" /> {overrideRole !== undefined ? "Using title/position for this experience" : "Using custom context"}
                 {officialLocked && (
                   <button
                     onClick={() => setCoachRole(officialJD.role)}
