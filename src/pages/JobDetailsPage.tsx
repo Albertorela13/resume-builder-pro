@@ -12,10 +12,10 @@ export default function JobDetailsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!officialLocked) {
+    if (!roleLocked) {
       setModalOpen(true);
     }
-  }, [officialLocked]);
+  }, [roleLocked]);
 
   return (
     <EditorLayout>
