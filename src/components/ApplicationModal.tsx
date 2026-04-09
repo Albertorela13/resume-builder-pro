@@ -14,9 +14,10 @@ import { Lock, Sparkles, Target, FileText, Search } from "lucide-react";
 interface ApplicationModalProps {
   open: boolean;
   onClose: () => void;
+  nudge?: boolean;
 }
 
-export function ApplicationModal({ open, onClose }: ApplicationModalProps) {
+export function ApplicationModal({ open, onClose, nudge = false }: ApplicationModalProps) {
   const { officialJD, officialLocked, lockOfficial, coachRole } = useCV();
   const [role, setRole] = useState("");
   const [jd, setJd] = useState("");
@@ -49,7 +50,11 @@ export function ApplicationModal({ open, onClose }: ApplicationModalProps) {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <DialogTitle className="text-lg">Tailor your CV to one job</DialogTitle>
+            <DialogTitle className="text-lg">
+              {nudge && !officialLocked
+                ? "Do you want to save your target job details?"
+                : "Tailor your CV to one job"}
+            </DialogTitle>
             <span className="rounded-full bg-ai-purple/10 px-2.5 py-0.5 text-[11px] font-semibold text-ai-purple">
               Recommended
             </span>
