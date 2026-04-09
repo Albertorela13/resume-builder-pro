@@ -12,6 +12,7 @@ export interface ExpEntry {
 
 interface CVState {
   officialJD: { role: string; jd: string };
+  roleLocked: boolean;
   officialLocked: boolean;
   coachRole: string;
   coachIsOfficial: boolean;
@@ -23,12 +24,13 @@ interface CVState {
 
 interface CVContextType extends CVState {
   setOfficialJD: (jd: { role: string; jd: string }) => void;
+  lockRole: (role: string) => void;
   lockOfficial: (role: string, jd: string) => void;
   setCoachRole: (role: string) => void;
   setSummaryText: (text: string) => void;
   setSkillTags: (tags: string[]) => void;
   setExpData: (data: ExpEntry[]) => void;
-  markPageVisited: (page: string) => boolean; // returns true if first visit
+  markPageVisited: (page: string) => boolean;
   genKey: () => "full" | "role" | "none";
 }
 
