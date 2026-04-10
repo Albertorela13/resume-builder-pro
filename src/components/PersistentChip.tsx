@@ -14,18 +14,18 @@ export function PersistentChip() {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1.5 transition-all hover:border-ai-purple/30 hover:bg-muted/70 hover:shadow-sm cursor-pointer"
+        className="group relative flex items-center gap-2 px-3 py-1.5 font-medium text-muted-foreground transition-colors duration-[400ms] hover:text-ai-purple cursor-pointer"
       >
         {!officialLocked ? (
           <>
-            <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">Application 1</span>
-            <span className="text-[10px] text-muted-foreground/70">· Set target job</span>
+            <Briefcase className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Application 1</span>
+            <span className="text-[10px] opacity-70">· Set target job</span>
           </>
         ) : (
           <>
-            <Lock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs font-medium text-foreground">{officialJD.role}</span>
+            <Lock className="h-3 w-3" />
+            <span className="text-xs font-medium text-foreground group-hover:text-ai-purple transition-colors duration-[400ms]">{officialJD.role}</span>
             {hasJD ? (
               <span className="flex items-center gap-0.5 text-[10px] text-success">
                 <CheckCircle2 className="h-3 w-3" />
@@ -39,6 +39,14 @@ export function PersistentChip() {
             )}
           </>
         )}
+        {/* TOP */}
+        <span className="absolute left-0 top-0 h-[2px] w-0 bg-ai-purple transition-all duration-100 group-hover:w-full" />
+        {/* RIGHT */}
+        <span className="absolute right-0 top-0 h-0 w-[2px] bg-ai-purple transition-all delay-100 duration-100 group-hover:h-full" />
+        {/* BOTTOM */}
+        <span className="absolute bottom-0 right-0 h-[2px] w-0 bg-ai-purple transition-all delay-200 duration-100 group-hover:w-full" />
+        {/* LEFT */}
+        <span className="absolute bottom-0 left-0 h-0 w-[2px] bg-ai-purple transition-all delay-300 duration-100 group-hover:h-full" />
       </button>
 
       <ApplicationModal open={modalOpen} onClose={() => setModalOpen(false)} />
