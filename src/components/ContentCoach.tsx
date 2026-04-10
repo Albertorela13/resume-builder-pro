@@ -77,7 +77,7 @@ export function ContentCoach({
 
   const handleInsert = (content: string) => {
     onInsert(content);
-    if (!officialLocked && onNudge) {
+    if (!officialLocked && onNudge && effectiveRole.trim().toLowerCase() !== officialJD.role.trim().toLowerCase()) {
       onNudge();
     }
   };
