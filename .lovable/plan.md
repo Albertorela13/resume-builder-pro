@@ -1,28 +1,17 @@
 
 
-## Plan: Fix nudge modal condition
+## Plan: Apply draw-outline animation to PersistentChip
 
-### Problem
-The nudge modal triggers whenever `officialLocked` is false. But if the user already saved a role in Step 1 (Job Details), and the generation context matches that role, the modal shouldn't appear — the role is already aligned.
+Replace the current hover style on the PersistentChip button with the sequential border-draw animation from the provided example.
 
-### Fix
+### Changes
 
-**`src/components/ContentCoach.tsx`** — Change the nudge condition at line 80 from:
+**`src/components/PersistentChip.tsx`**
 
-```ts
-if (!officialLocked && onNudge) {
-```
+- Replace the `<button>` with a styled button that includes the four `<span>` elements for the animated border effect (top → right → bottom → left).
+- Swap `hover:border-ai-purple/30 hover:bg-muted/70 hover:shadow-sm` for `hover:text-ai-purple` transition and the four absolute-positioned spans using `bg-ai-purple` instead of `bg-indigo-300`.
+- Keep `rounded-full` removed (the draw-outline effect works with sharp corners). Alternatively, keep a slight `rounded-md` if preferred — the animation still works.
+- Keep all existing content (icons, text, status indicators) unchanged inside the button.
 
-to:
-
-```ts
-if (!officialLocked && onNudge && effectiveRole.trim().toLowerCase() !== officialJD.role.trim().toLowerCase()) {
-```
-
-This ensures the nudge only fires when the role being used for generation differs from the officially saved role. If the user already saved "Senior Product Manager" in Job Details, and the experience title or coach role matches it, no nudge appears.
-
-### Files changed
-| File | Change |
-|---|---|
-| `src/components/ContentCoach.tsx` | Update nudge condition to compare `effectiveRole` vs `officialJD.role` |
+The four spans create a sequential clockwise border animation on hover using staggered Tailwind `delay-` classes.
 
