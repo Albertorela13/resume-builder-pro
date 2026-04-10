@@ -1,23 +1,28 @@
 
 
-## Plan: Create CONTEXT.md Documentation File
+## Plan: Fix nudge modal condition
 
-Create a single file `CONTEXT.md` at the project root that comprehensively documents:
+### Problem
+The nudge modal triggers whenever `officialLocked` is false. But if the user already saved a role in Step 1 (Job Details), and the generation context matches that role, the modal shouldn't appear — the role is already aligned.
 
-- Project purpose and architecture
-- All components and their roles
-- Global state (CVContext) schema and logic
-- Page-by-page behavior and field details
-- AI Content Coach system (generation keys, suggestion tiers, context priority)
-- Application Modal and PersistentChip flow
-- Nudge system and locking mechanism
-- Design tokens and theming
-- Layout system (EditorLayout, LivePreview, responsive behavior)
-- Data structures (suggestions format, ExpEntry)
-- Navigation order and routing
-- All UX decisions made during development
+### Fix
 
-### File: `CONTEXT.md` (create)
+**`src/components/ContentCoach.tsx`** — Change the nudge condition at line 80 from:
 
-Single comprehensive markdown document covering every aspect of the project derived from the current codebase.
+```ts
+if (!officialLocked && onNudge) {
+```
+
+to:
+
+```ts
+if (!officialLocked && onNudge && effectiveRole.trim().toLowerCase() !== officialJD.role.trim().toLowerCase()) {
+```
+
+This ensures the nudge only fires when the role being used for generation differs from the officially saved role. If the user already saved "Senior Product Manager" in Job Details, and the experience title or coach role matches it, no nudge appears.
+
+### Files changed
+| File | Change |
+|---|---|
+| `src/components/ContentCoach.tsx` | Update nudge condition to compare `effectiveRole` vs `officialJD.role` |
 
