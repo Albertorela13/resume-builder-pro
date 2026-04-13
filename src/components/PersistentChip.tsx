@@ -7,42 +7,44 @@ export function PersistentChip() {
   const { officialLocked, officialJD } = useCV();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const hasRole = officialLocked && officialJD.role.trim() !== "";
-  const hasJD = officialLocked && officialJD.jd.trim() !== "";
+  const hasRole = officialJD.role.trim() !== "";
+  const hasJD = officialJD.jd.trim() !== "";
 
   const renderContent = () => {
-    if (!officialLocked) {
+    if (!hasRole) {
+      // State A — no job details yet
       return (
         <>
-          <Briefcase className="h-3.5 w-3.5" />
-          <span className="text-xs font-medium">Application 1</span>
-          <span className="text-[10px] opacity-70">· Set target job</span>
+          <Briefcase className="h-4 w-4 shrink-0" />
+          <span className="text-sm font-medium">Application</span>
+          <span className="text-xs text-muted-foreground">· Set job details</span>
         </>
       );
     }
 
-    if (!hasRole) {
+    if (hasRole && !hasJD) {
+      // State B — role exists, no JD
       return (
         <>
-          <Briefcase className="h-3.5 w-3.5" />
-          <span className="text-xs font-medium text-foreground group-hover:text-ai-purple transition-colors duration-[400ms]">
-            No role
+          <Briefcase className="h-4 w-4 shrink-0" />
+          <span className="text-sm font-medium text-foreground group-hover:text-ai-purple transition-colors duration-[400ms]">
+            {officialJD.role}
+          </span>
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <AlertCircle className="h-3 w-3 text-amber-500" />
+            Missing
           </span>
         </>
       );
     }
 
+    // State C — role + JD exist (locked)
     return (
       <>
-        <span className="text-xs font-semibold text-foreground group-hover:text-ai-purple transition-colors duration-[400ms]">
+        <Briefcase className="h-4 w-4 shrink-0" />
+        <span className="text-sm font-semibold text-foreground group-hover:text-ai-purple transition-colors duration-[400ms]">
           {officialJD.role}
         </span>
-        {!hasJD && (
-          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-            <AlertCircle className="h-2.5 w-2.5 text-amber-500" />
-            No JD
-          </span>
-        )}
       </>
     );
   };
