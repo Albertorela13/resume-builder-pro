@@ -185,7 +185,7 @@ export default function ExperiencePage() {
                 onReplace={handleReplace}
                 getSuggestions={getSuggestions}
                 onNudge={() => setNudgeOpen(true)}
-                overrideRole={contextRole}
+                overrideRole={activeEntry?.title?.trim() || ""}
               />
             )}
           </div>
