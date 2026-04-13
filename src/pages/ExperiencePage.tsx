@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useCV, type ExpEntry } from "@/contexts/CVContext";
 import { EditorLayout } from "@/components/EditorLayout";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -37,14 +37,6 @@ export default function ExperiencePage() {
   const activeIndex = 0;
   const activeEntry = expData[activeIndex];
 
-  // Context priority: 1) entry title, 2) officialJD.role, 3) empty
-  const contextRole = useMemo(() => {
-    const entryTitle = activeEntry?.title?.trim() || "";
-    if (entryTitle) return entryTitle;
-    const official = officialJD.role?.trim() || "";
-    if (official) return official;
-    return "";
-  }, [activeEntry?.title, officialJD.role]);
 
   const handleInsert = useCallback(
     (content: string) => {
@@ -185,7 +177,7 @@ export default function ExperiencePage() {
                 onReplace={handleReplace}
                 getSuggestions={getSuggestions}
                 onNudge={() => setNudgeOpen(true)}
-                overrideRole={contextRole}
+                overrideRole={activeEntry?.title?.trim() || ""}
               />
             )}
           </div>

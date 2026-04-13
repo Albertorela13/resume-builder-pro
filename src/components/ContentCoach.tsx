@@ -36,7 +36,9 @@ export function ContentCoach({
     markPageVisited,
   } = useCV();
 
-  const effectiveRole = overrideRole !== undefined ? overrideRole : coachRole;
+  const effectiveRole = overrideRole !== undefined
+    ? (overrideRole.trim() || officialJD.role?.trim() || "")
+    : coachRole;
 
   const [suggestions, setSuggestions] = useState<(SuggestionItem | string)[]>([]);
   const [loading, setLoading] = useState(false);
@@ -116,7 +118,33 @@ export function ContentCoach({
       </div>
 
       {/* Context Block */}
-      {showContext && (
+      {showContext && overrideRole !== undefined ? (
+        <div className="rounded-lg border border-coach-border bg-coach-bg p-3">
+          {!overrideRole.trim() && !officialJD.role.trim() ? (
+            <p className="text-xs text-muted-foreground">
+              No job title. Results may be generic.
+            </p>
+          ) : !overrideRole.trim() && officialJD.role.trim() ? (
+            <>
+              <p className="text-xs text-foreground">
+                Using application job title: <span className="font-semibold">{officialJD.role}</span>.
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Add one to this experience to change it.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-foreground">
+                Using experience job title: <span className="font-semibold">{overrideRole}</span>.
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                You can change it anytime.
+              </p>
+            </>
+          )}
+        </div>
+      ) : showContext ? (
         <div className="rounded-lg border border-coach-border bg-coach-bg p-3">
           <div className="flex items-center gap-2 text-xs">
             {isOfficial ? (
@@ -125,7 +153,7 @@ export function ContentCoach({
               </span>
             ) : hasContext ? (
               <span className="flex items-center gap-1 text-ai-purple">
-                <Sparkles className="h-3 w-3" /> {overrideRole !== undefined ? "Using title/position for this experience" : "Using custom context"}
+                <Sparkles className="h-3 w-3" /> Using custom context
                 {officialLocked && (
                   <button
                     onClick={() => setCoachRole(officialJD.role)}
@@ -140,14 +168,13 @@ export function ContentCoach({
             )}
           </div>
           <Input
-            value={overrideRole !== undefined ? overrideRole : coachRole}
+            value={coachRole}
             onChange={(e) => setCoachRole(e.target.value)}
             placeholder="Target role (e.g. Product Manager)"
             className="mt-2 text-sm"
-            readOnly={overrideRole !== undefined}
           />
         </div>
-      )}
+      ) : null}
 
       {/* Loading */}
       {loading && (
