@@ -18,46 +18,32 @@ interface ApplicationModalProps {
 }
 
 export function ApplicationModal({ open, onClose, nudge = false }: ApplicationModalProps) {
-  const { officialJD, roleLocked, officialLocked, lockRole, lockOfficial, coachRole } = useCV();
+  const { officialJD, officialLocked, saveJobDetails } = useCV();
   const [role, setRole] = useState("");
   const [jd, setJd] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (open) {
-      if (roleLocked) {
-        setRole(officialJD.role);
-        setJd(officialJD.jd);
-      } else {
-        setRole(coachRole || "");
-        setJd("");
-      }
+      setRole(officialJD.role);
+      setJd(officialJD.jd);
       setError("");
     }
-  }, [open, roleLocked, officialLocked, officialJD, coachRole]);
+  }, [open, officialJD]);
 
   const handleSave = () => {
     if (!role.trim()) {
       setError("Target role is required");
       return;
     }
-
-    if (!roleLocked) {
-      // Step 1: save role only, lock role
-      lockRole(role.trim());
-      onClose();
-    } else if (!officialLocked) {
-      // Step 2: save JD too, fully lock
-      lockOfficial(role.trim(), jd.trim());
-      onClose();
-    }
+    saveJobDetails(role.trim(), jd.trim());
+    onClose();
   };
 
-  // Determine title
   const getTitle = () => {
     if (officialLocked) return "Job details";
-    if (nudge && !roleLocked) return "Do you want to save your target job details?";
-    if (roleLocked) return "Add job description";
+    if (nudge && !officialJD.role.trim()) return "Do you want to save your target job details?";
+    if (officialJD.role.trim()) return "Edit job details";
     return "Tailor your CV to one job";
   };
 
@@ -83,16 +69,9 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
             </div>
           )}
 
-          {roleLocked && !officialLocked && (
-            <div className="flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
-              <Lock className="h-3 w-3" />
-              Target role is locked — you can still add a job description
-            </div>
-          )}
-
           <div>
             <label className="text-sm font-medium text-foreground">
-              Target Role {!roleLocked && <span className="text-destructive">*</span>}
+              Target Role {!officialLocked && <span className="text-destructive">*</span>}
             </label>
             <Input
               value={role}
@@ -102,7 +81,7 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
               }}
               placeholder="e.g. Senior Product Manager"
               className="mt-1"
-              readOnly={roleLocked}
+              readOnly={officialLocked}
             />
             {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
           </div>
@@ -124,7 +103,6 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
             />
           </div>
 
-          {/* Why is this recommended */}
           {!officialLocked && (
             <div className="rounded-lg border border-coach-border bg-coach-bg p-3 space-y-2">
               <p className="text-xs font-semibold text-foreground">Why is this recommended?</p>
@@ -158,7 +136,7 @@ export function ApplicationModal({ open, onClose, nudge = false }: ApplicationMo
                 className="bg-ai-purple text-ai-purple-foreground hover:bg-ai-purple/90 gap-1.5"
               >
                 <FileText className="h-4 w-4" />
-                {roleLocked ? "Save & lock job details" : "Save & tailor my CV"}
+                Save job details
               </Button>
             )}
           </div>
