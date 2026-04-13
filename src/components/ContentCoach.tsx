@@ -36,7 +36,9 @@ export function ContentCoach({
     markPageVisited,
   } = useCV();
 
-  const effectiveRole = overrideRole !== undefined ? overrideRole : coachRole;
+  const effectiveRole = overrideRole !== undefined
+    ? (overrideRole.trim() || officialJD.role?.trim() || "")
+    : coachRole;
 
   const [suggestions, setSuggestions] = useState<(SuggestionItem | string)[]>([]);
   const [loading, setLoading] = useState(false);
