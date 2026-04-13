@@ -63,7 +63,7 @@ export function ContentCoach({
 
   useEffect(() => {
     const isFirst = markPageVisited(pageKey);
-    if (isFirst && (effectiveRole.trim() || officialJD.role.trim())) {
+    if (isFirst) {
       const timer = setTimeout(() => {
         setShowContext(true);
         doGenerate();
